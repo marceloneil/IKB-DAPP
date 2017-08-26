@@ -13,3 +13,7 @@ body {
   width: 128px;
   background-color: #739AFF;
 }
+
+.test {
+  display: inline-block;
+}
