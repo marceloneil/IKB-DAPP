@@ -11,7 +11,7 @@ import contract from 'truffle-contract'
 
 // Components
 // import { Dimmer, Loader } from 'semantic-ui-react'
-import Account from './Account'
+import AccountInfo from './AccountInfo'
 import ContractInfo from './ContractInfo'
 import BuyToken from './BuyToken'
 
@@ -179,7 +179,7 @@ class App extends Component {
           contract={this.state.contract}
           toEther={this.toEther}
         />
-        <Account
+        <AccountInfo
           account={this.state.account}
           toEther={this.toEther}
         />

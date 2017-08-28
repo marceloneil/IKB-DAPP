@@ -5,7 +5,7 @@ import { Button, Card, Dimmer, Header, Icon } from 'semantic-ui-react'
 
 import BlockiesIdenticon from './BlockiesIdenticon'
 
-const Account = (props) => (
+const AccountInfo = (props) => (
   <Card centered>
     <Card.Content>
       <Card.Header>Account info</Card.Header>
@@ -40,9 +40,9 @@ const Account = (props) => (
   </Card>
 )
 
-Account.propTypes = {
+AccountInfo.propTypes = {
   account: PropTypes.object,
   toEther: PropTypes.func
 }
 
-export default Account
+export default AccountInfo
