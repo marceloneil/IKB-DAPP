@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { Card, Dimmer, Form, Input, Loader } from 'semantic-ui-react'
+import { Card, Dimmer, Form, Header, Icon, Input, Loader } from 'semantic-ui-react'
 
 class BuyToken extends Component {
   constructor (props) {
@@ -32,9 +32,21 @@ class BuyToken extends Component {
   }
 
   render () {
+    const contractBalance = this.props.contract.contractBalance
     const contractPrice = this.props.toEther(this.props.contract.price)
-    const totalPrice = this.props.toEther(this.state.value * this.props.contract.price)
+    const currentSeries = this.props.contract.currentSeries
     const IKBFirstToken = this.props.contract.issuedToDate - this.props.contract.contractBalance
+    const totalPrice = this.props.toEther(this.state.value * this.props.contract.price)
+
+    let contractEmpty = true
+    if (contractBalance) {
+      contractEmpty = false
+    }
+
+    let buyPending = false
+    if (this.props.buyPending) {
+      buyPending = true
+    }
 
     let IKBTokenNumbers
     if (this.state.value > 1) {
@@ -47,17 +59,24 @@ class BuyToken extends Component {
     return (
       <Card centered>
         <Card.Content>
-          <Card.Header>Buy tokens from series #{this.props.contract.currentSeries}</Card.Header>
+          <Card.Header>Buy tokens from series #{currentSeries}</Card.Header>
         </Card.Content>
-        <Card.Content>
-          <Dimmer active={!!this.props.buyPending} inverted>
+        <Dimmer.Dimmable as={Card.Content} blurring dimmed={contractEmpty || buyPending}>
+          <Dimmer active={contractEmpty} inverted>
+            <Header as='h3' icon>
+              <Icon name='frown' />
+              <Header.Subheader>
+                There are no IKB available to purchase
+              </Header.Subheader>
+            </Header>
+          </Dimmer>
+          <Dimmer active={buyPending} inverted>
             <Loader inverted>Pending transaction</Loader>
           </Dimmer>
           <Form onSubmit={this.handleSubmit}>
             <Form.Field>
               <Input
                 label={{
-                  basic: true,
                   content: 'IKB'
                 }}
                 action={{
@@ -69,7 +88,7 @@ class BuyToken extends Component {
                 fluid
                 type='number'
                 min={1}
-                max={this.props.contract.contractBalance}
+                max={contractBalance}
                 value={this.state.value}
                 onChange={this.handleChange}
               />
@@ -77,7 +96,7 @@ class BuyToken extends Component {
             <p>Price: {this.state.value} IKB × Ξ{contractPrice} = Ξ{totalPrice}</p>
             {IKBTokenNumbers}
           </Form>
-        </Card.Content>
+        </Dimmer.Dimmable>
       </Card>
     )
   }

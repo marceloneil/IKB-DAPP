@@ -14,6 +14,7 @@ import contract from 'truffle-contract'
 import AccountInfo from './AccountInfo'
 import ContractInfo from './ContractInfo'
 import BuyToken from './BuyToken'
+import TransferToken from './TransferToken'
 
 class App extends Component {
   constructor (props) {
@@ -23,7 +24,8 @@ class App extends Component {
       account: {
         address: null,
         ethBalance: 0,
-        tokenBalance: 0
+        tokenBalance: 0,
+        records: null
       },
       contract: {
         currentSeries: null,
@@ -40,7 +42,10 @@ class App extends Component {
 
     this.toWei = this.toWei.bind(this)
     this.toEther = this.toEther.bind(this)
+    this.isAddress = this.isAddress.bind(this)
+
     this.buyToken = this.buyToken.bind(this)
+    this.transferToken = this.transferToken.bind(this)
   }
 
   componentWillMount () {
@@ -89,21 +94,22 @@ class App extends Component {
   }
 
   getBalances () {
-    this.state.web3.eth.getBalance(this.state.account.address, (error, balance) => {
+    const address = this.state.account.address
+    const instance = this.state.instance
+    const web3 = this.state.web3
+    console.log(instance)
+    let account = this.state.account
+    web3.eth.getBalance(address, (error, balance) => {
       if (error) { return console.log(error) }
-      let account = this.state.account
       account.ethBalance = balance.toNumber()
-      this.setState({
-        account: account
-      })
+      instance.balanceOf.call(address).then(balance => {
+        account.tokenBalance = balance.toNumber()
+        this.setState({
+          account: account
+        })
+      }).catch(console.log)
     })
-    this.state.instance.balanceOf.call(this.state.account.address).then(balance => {
-      let account = this.state.account
-      account.tokenBalance = balance.toNumber()
-      this.setState({
-        account: account
-      })
-    }).catch(console.log)
+
     // this.state.instance.issueNewSeries({ from: this.state.account.address }).then(data => {
     //   console.log(data)
     // }).catch(error => {
@@ -163,12 +169,26 @@ class App extends Component {
     return undefined
   }
 
+  isAddress (address) {
+    if (this.state.web3) {
+      return this.state.web3.isAddress(address)
+    }
+    return undefined
+  }
+
   buyToken (value) {
     this.state.instance.sendTransaction({
       from: this.state.account.address,
       value: value
     }).then(receipt => {
       this.setState({ buyPending: receipt.tx })
+    }).catch(console.log)
+  }
+
+  transferToken (to, value) {
+    let from = this.state.account.address
+    this.state.instance.transfer(to, value, { from: from }).then(data => {
+      console.log(data)
     }).catch(console.log)
   }
 
@@ -188,6 +208,12 @@ class App extends Component {
           buyPending={this.state.buyPending}
           buyToken={this.buyToken}
           toEther={this.toEther}
+        />
+        <TransferToken
+          account={this.state.account}
+          contract={this.state.contract}
+          transferToken={this.transferToken}
+          isAddress={this.isAddress}
         />
       </div>
     )
