@@ -36,12 +36,15 @@ class BurnToken extends Component {
 
   render () {
     const tokenBalance = this.props.account.tokenBalance
-    const records = this.props.account.records.map(record => {
-      return {
-        text: record,
-        value: record
-      }
-    })
+    let records
+    if (this.props.account.records) {
+      records = this.props.account.records.map(record => {
+        return {
+          text: record,
+          value: record
+        }
+      })
+    }
 
     let accountEmpty = true
     if (tokenBalance > 0) {
@@ -70,7 +73,7 @@ class BurnToken extends Component {
             />
           </Form.Field>
           <Form.Field>
-            <Button animated='fade' className='right' color='teal'>
+            <Button animated='fade' id='burn-button' color='teal'>
               <Button.Content visible>Burn</Button.Content>
               <Button.Content hidden>
                 <Icon name='fire' />

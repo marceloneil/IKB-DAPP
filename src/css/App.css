@@ -2,9 +2,13 @@ body {
   background-color: #002FA7;
 }
 
+.ui.card:first-child {
+  margin-top: 10em;
+}
+
 .ui.card {
   width: 40em;
-  margin-top: 10em;
+  margin-bottom: 2.5em;
 }
 
 .flex-box {
@@ -33,4 +37,8 @@ body {
 
 #burn-panel {
   z-index: 1;
+}
+
+#burn-button {
+  float: right
 }
