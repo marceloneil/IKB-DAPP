@@ -10,18 +10,27 @@ const AccountInfo = (props) => {
   const ethBalance = props.toEther(props.account.ethBalance)
   const tokenBalance = props.account.tokenBalance
 
+  let editions
+  if (props.account.records) {
+    if (props.account.records.length === 1) {
+      editions = <p>Edition: {props.account.records[0]}</p>
+    } else {
+      editions = <p>Editions: {props.account.records.join(', ')}</p>
+    }
+  }
+
   return (
-    <Card.Content>
+    <Card.Content className='flex-box'>
       <BlockiesIdenticon
-        className='left'
         seed={address}
         size={8}
         scale={16}
       />
-      <div className='right'>
-        <p>Account: {/* props.account.address */}</p>
+      <div id='account-info'>
+        <p>Account: {address}</p>
         <p>Ethereum Balance: Ξ{ethBalance}</p>
         <p>Token Balance: {tokenBalance} IKB</p>
+        {editions}
       </div>
     </Card.Content>
   )

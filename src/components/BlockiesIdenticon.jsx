@@ -30,7 +30,7 @@ class BlockiesIdenticon extends Component {
   render () {
     return (
       <canvas
-        className='blockies-identicon'
+        id='blockies-identicon'
         ref={canvas => { this.canvas = canvas }}
       />
     )

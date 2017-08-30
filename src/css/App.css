@@ -7,17 +7,30 @@ body {
   margin-top: 10em;
 }
 
-.blockies-identicon {
+.flex-box {
+  display: flex
+}
+
+.flex-box.seperate {
+  justify-content: space-between;
+}
+
+#account-info {
+  padding-left: 1em;
+}
+
+#blockies-identicon {
   border-radius: 5%;
   height: 128px;
   width: 128px;
   background-color: #739AFF;
 }
 
-.left {
-  float: left
+#transfer-button {
+  float: right;
+  min-width: 6.75em;
 }
 
-.right {
-  float: right
+#burn-panel {
+  z-index: 1;
 }

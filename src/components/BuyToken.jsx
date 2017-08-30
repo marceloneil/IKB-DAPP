@@ -46,21 +46,21 @@ class BuyToken extends Component {
       contractEmpty = false
     }
 
-    let buyPending = false
-    if (this.props.buyPending) {
-      buyPending = true
+    let transferPending = false
+    if (this.props.transferPending) {
+      transferPending = true
     }
 
     let IKBTokenNumbers
     if (this.state.value > 1) {
       const IKBLastToken = IKBFirstToken + this.state.value - 1
-      IKBTokenNumbers = <p>Buying tokens #{IKBFirstToken} to #{IKBLastToken}</p>
+      IKBTokenNumbers = <p>Buying editions #{IKBFirstToken} to #{IKBLastToken}</p>
     } else {
-      IKBTokenNumbers = <p>Buying token #{IKBFirstToken}</p>
+      IKBTokenNumbers = <p>Buying edition #{IKBFirstToken}</p>
     }
 
     return (
-      <Dimmer.Dimmable as={Card.Content} blurring dimmed={contractEmpty || buyPending}>
+      <Dimmer.Dimmable as={Card.Content} blurring dimmed={contractEmpty || transferPending}>
         <Dimmer active={contractEmpty} inverted>
           <Header as='h3' icon>
             <Icon name='frown' />
@@ -69,7 +69,7 @@ class BuyToken extends Component {
             </Header.Subheader>
           </Header>
         </Dimmer>
-        <Dimmer active={buyPending} inverted>
+        <Dimmer active={transferPending} inverted>
           <Loader inverted>Pending transaction</Loader>
         </Dimmer>
         <Form onSubmit={this.handleSubmit}>
@@ -102,7 +102,7 @@ class BuyToken extends Component {
 
 BuyToken.propTypes = {
   contract: PropTypes.object,
-  buyPending: PropTypes.string,
+  transferPending: PropTypes.string,
   buyToken: PropTypes.func,
   toEther: PropTypes.func
 }

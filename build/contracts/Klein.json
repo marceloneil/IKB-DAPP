@@ -857,8 +857,120 @@
       "links": {},
       "address": "0xa63434012b3a6b17eaa71fbd6d8bb0a1674bc57b",
       "updated_at": 1504036978971
+    },
+    "1504060693850": {
+      "events": {
+        "0x686da8ab505305dea46a4a41c4f06e7d07efd52dd1a016a942b0455bf7290c18": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "IKBedition",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "holderAddress",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "price",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "burned",
+              "type": "bool"
+            }
+          ],
+          "name": "UpdateRecord",
+          "type": "event"
+        },
+        "0x0d1a94de7718b697a5b4a1ef754fe8d19d6c6bf3d3189fc196e0df8751c2d466": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "seriesNum",
+              "type": "uint256"
+            }
+          ],
+          "name": "SeriesCreated",
+          "type": "event"
+        },
+        "0xc21fb125aad48df1c2e06ac3c462d3772fe147e0f33d8e031d619eb51776f60f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "edition",
+              "type": "uint256"
+            }
+          ],
+          "name": "SpecificApproval",
+          "type": "event"
+        },
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "_value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Transfer",
+          "type": "event"
+        },
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_spender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "_value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Approval",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x3c8be772d7d171c7575b2f9538ed46f25b044a4b",
+      "updated_at": 1504060699357
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1504036978971
+  "updated_at": 1504060699357
 }

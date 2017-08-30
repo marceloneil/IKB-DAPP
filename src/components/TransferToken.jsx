@@ -42,6 +42,7 @@ class TransferToken extends Component {
   }
 
   render () {
+    const records = this.props.account.records
     const tokenBalance = this.props.account.tokenBalance
 
     let accountEmpty = true
@@ -54,11 +55,16 @@ class TransferToken extends Component {
       transferPending = true
     }
 
+    let editions
+    if (records) {
+      if (records.length === 1 || this.state.amount === 1) {
+        editions = <p className='left'>Edition: {records[0]}</p>
+      } else {
+        editions = <p className='left'>Editions: {records.slice(0, this.state.amount).join(', ')}</p>
+      }
+    }
+
     return (
-      // <div>
-      //   <Card.Content>
-      //     <Card.Header>Transfer Tokens</Card.Header>
-      //   </Card.Content>
       <Dimmer.Dimmable as={Card.Content} blurring dimmed={accountEmpty || transferPending}>
         <Dimmer active={accountEmpty} inverted>
           <Header as='h3' icon>
@@ -96,17 +102,19 @@ class TransferToken extends Component {
               onChange={this.handleAmountChange}
             />
           </Form.Field>
-          <Form.Field>
-            <Button animated='fade' className='right' color='teal'>
-              <Button.Content visible>Transfer</Button.Content>
-              <Button.Content hidden>
-                <Icon name='send' />
-              </Button.Content>
-            </Button>
+          <Form.Field className='flex-box seperate'>
+            {editions}
+            <div>
+              <Button animated='fade' color='teal'>
+                <Button.Content visible>Transfer</Button.Content>
+                <Button.Content hidden>
+                  <Icon name='send' />
+                </Button.Content>
+              </Button>
+            </div>
           </Form.Field>
         </Form>
       </Dimmer.Dimmable>
-      // </div>
     )
   }
 }

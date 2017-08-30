@@ -15,6 +15,7 @@ import AccountInfo from './AccountInfo'
 import ContractInfo from './ContractInfo'
 import BuyToken from './BuyToken'
 import TransferToken from './TransferToken'
+import BurnToken from './BurnToken'
 
 class App extends Component {
   constructor (props) {
@@ -35,7 +36,7 @@ class App extends Component {
         maxSupplyPossible: null,
         contractBalance: null
       },
-      buyPending: null,
+      transferPending: null,
       instance: null,
       web3: null,
       currentPane: 0
@@ -49,6 +50,7 @@ class App extends Component {
 
     this.buyToken = this.buyToken.bind(this)
     this.transferToken = this.transferToken.bind(this)
+    this.burnToken = this.burnToken.bind(this)
   }
 
   componentWillMount () {
@@ -108,6 +110,11 @@ class App extends Component {
         account.ethBalance = balance.toNumber()
         instance.balanceOf.call(address).then(balance => {
           account.tokenBalance = balance.toNumber()
+          return instance.getHolderEditions.call(address)
+        }).then(records => {
+          account.records = records.map(record => {
+            return record.toNumber()
+          })
           this.setState({
             account: account
           })
@@ -159,8 +166,8 @@ class App extends Component {
   watchContract () {
     this.state.instance.Transfer((error, result) => {
       if (error) { return console.log(error) }
-      if (result.transactionHash === this.state.buyPending) {
-        this.setState({ buyPending: null })
+      if (result.transactionHash === this.state.transferPending) {
+        this.setState({ transferPending: null })
       }
       this.getBalances()
       this.getContractVariables()
@@ -197,24 +204,40 @@ class App extends Component {
       from: this.state.account.address,
       value: value
     }).then(receipt => {
-      this.setState({ buyPending: receipt.tx })
+      this.setState({ transferPending: receipt.tx })
     }).catch(console.log)
   }
 
   transferToken (to, value) {
     let from = this.state.account.address
-    this.state.instance.transfer(to, value, { from: from }).then(data => {
-      console.log(data)
+    this.state.instance.transfer(to, value, { from: from }).then(receipt => {
+      this.setState({ transferPending: receipt.tx })
+    }).catch(console.log)
+  }
+
+  burnToken (edition) {
+    let from = this.state.account.address
+    this.state.instance.ritual(edition, { from: from }).then(value => {
+      console.log(value)
     }).catch(console.log)
   }
 
   render () {
     const currentPane = this.state.currentPane
+    const currentSeries = this.state.contract.currentSeries
+
+    const titles = [
+      'Account Info',
+      'Buy Tokens from series #' + currentSeries,
+      'Transfer Tokens',
+      'Burn Tokens'
+    ]
 
     const items = [
-      'Account Info',
-      'Buy Tokens',
-      'Transfer Tokens'
+      'Account',
+      'Buy',
+      'Transfer',
+      'Burn'
     ]
 
     const panes = [
@@ -224,15 +247,20 @@ class App extends Component {
       />,
       <BuyToken
         contract={this.state.contract}
-        buyPending={this.state.buyPending}
+        transferPending={this.state.transferPending}
         buyToken={this.buyToken}
         toEther={this.toEther}
       />,
       <TransferToken
         account={this.state.account}
         contract={this.state.contract}
+        transferPending={this.state.transferPending}
         transferToken={this.transferToken}
         isAddress={this.isAddress}
+      />,
+      <BurnToken
+        account={this.state.account}
+        burnToken={this.burnToken}
       />
     ]
 
@@ -257,13 +285,13 @@ class App extends Component {
             </Header>
           </Dimmer>
           <Card.Content>
-            <Card.Header>{items[currentPane]}</Card.Header>
+            <Card.Header>{titles[currentPane]}</Card.Header>
           </Card.Content>
           {panes[currentPane]}
           <Menu
             activeIndex={this.state.currentPane}
             attached='bottom'
-            widths={3}
+            widths={4}
             items={items}
             onItemClick={this.handleItemClick}
           />
