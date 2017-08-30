@@ -1,9 +1,6 @@
 body {
   background-color: #002FA7;
-}
-
-.ui.card:first-child {
-  margin-top: 10em;
+  padding-top: 10em;
 }
 
 .ui.card {
