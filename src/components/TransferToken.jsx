@@ -22,8 +22,10 @@ class TransferToken extends Component {
   }
 
   handleAmountChange (event) {
-    if (event.target.value &&
-      event.target.value >= 1 &&
+    if (!event.target.value) {
+      this.setState({ amount: '' })
+    } else if (event.target.value &&
+      event.target.value >= 0 &&
       event.target.value <= this.props.account.tokenBalance) {
       this.setState({ amount: parseInt(event.target.value) })
     }
@@ -33,6 +35,7 @@ class TransferToken extends Component {
     event.preventDefault()
     if (this.state.address &&
         this.state.amount &&
+        this.state.amount > 0 &&
         this.props.isAddress(this.state.address)) {
       this.props.transferToken(this.state.address, this.state.amount)
     }
@@ -52,58 +55,58 @@ class TransferToken extends Component {
     }
 
     return (
-      <Card centered>
-        <Card.Content>
-          <Card.Header>Transfer Tokens</Card.Header>
-        </Card.Content>
-        <Dimmer.Dimmable as={Card.Content} blurring dimmed={accountEmpty || transferPending}>
-          <Dimmer active={accountEmpty} inverted>
-            <Header as='h3' icon>
-              <Icon name='warning sign' />
-              <Header.Subheader>
-                You must own some IKB to transfer!
-              </Header.Subheader>
-            </Header>
-          </Dimmer>
-          <Dimmer active={transferPending} inverted>
-            <Loader inverted>Pending transaction</Loader>
-          </Dimmer>
-          <Form onSubmit={this.handleSubmit}>
-            <Form.Field>
-              <Input
-                label={{
-                  content: 'To'
-                }}
-                fluid
-                type='text'
-                value={this.state.address}
-                onChange={this.handleAddressChange}
-              />
-            </Form.Field>
-            <Form.Field>
-              <Input
-                label={{
-                  content: 'IKB'
-                }}
-                fluid
-                type='number'
-                min={1}
-                max={tokenBalance}
-                value={this.state.value}
-                onChange={this.handleAmountChange}
-              />
-            </Form.Field>
-            <Form.Field>
-              <Button animated='fade' className='right' color='teal'>
-                <Button.Content visible>Transfer</Button.Content>
-                <Button.Content hidden>
-                  <Icon name='send' />
-                </Button.Content>
-              </Button>
-            </Form.Field>
-          </Form>
-        </Dimmer.Dimmable>
-      </Card>
+      // <div>
+      //   <Card.Content>
+      //     <Card.Header>Transfer Tokens</Card.Header>
+      //   </Card.Content>
+      <Dimmer.Dimmable as={Card.Content} blurring dimmed={accountEmpty || transferPending}>
+        <Dimmer active={accountEmpty} inverted>
+          <Header as='h3' icon>
+            <Icon name='warning sign' />
+            <Header.Subheader>
+              You must own some IKB to transfer!
+            </Header.Subheader>
+          </Header>
+        </Dimmer>
+        <Dimmer active={transferPending} inverted>
+          <Loader inverted>Pending transaction</Loader>
+        </Dimmer>
+        <Form onSubmit={this.handleSubmit}>
+          <Form.Field>
+            <Input
+              label={{
+                content: 'To'
+              }}
+              fluid
+              type='text'
+              value={this.state.address}
+              onChange={this.handleAddressChange}
+            />
+          </Form.Field>
+          <Form.Field>
+            <Input
+              label={{
+                content: 'IKB'
+              }}
+              fluid
+              type='number'
+              min={1}
+              max={tokenBalance}
+              value={this.state.amount}
+              onChange={this.handleAmountChange}
+            />
+          </Form.Field>
+          <Form.Field>
+            <Button animated='fade' className='right' color='teal'>
+              <Button.Content visible>Transfer</Button.Content>
+              <Button.Content hidden>
+                <Icon name='send' />
+              </Button.Content>
+            </Button>
+          </Form.Field>
+        </Form>
+      </Dimmer.Dimmable>
+      // </div>
     )
   }
 }

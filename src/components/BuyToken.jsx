@@ -16,8 +16,10 @@ class BuyToken extends Component {
   }
 
   handleChange (event) {
-    if (event.target.value &&
-      event.target.value >= 1 &&
+    if (!event.target.value) {
+      this.setState({ value: '' })
+    } else if (event.target.value &&
+      event.target.value >= 0 &&
       event.target.value <= this.props.contract.contractBalance) {
       this.setState({ value: parseInt(event.target.value) })
     }
@@ -25,18 +27,19 @@ class BuyToken extends Component {
 
   handleSubmit (event) {
     event.preventDefault()
-    if (this.state.value) {
+    if (this.state.value &&
+        this.state.value > 0) {
       let value = this.state.value * this.props.contract.price
       this.props.buyToken(value)
     }
   }
 
   render () {
+    const value = this.state.value ? this.state.value : 0
     const contractBalance = this.props.contract.contractBalance
     const contractPrice = this.props.toEther(this.props.contract.price)
-    const currentSeries = this.props.contract.currentSeries
     const IKBFirstToken = this.props.contract.issuedToDate - this.props.contract.contractBalance
-    const totalPrice = this.props.toEther(this.state.value * this.props.contract.price)
+    const totalPrice = this.props.toEther(value * this.props.contract.price)
 
     let contractEmpty = true
     if (contractBalance) {
@@ -57,47 +60,42 @@ class BuyToken extends Component {
     }
 
     return (
-      <Card centered>
-        <Card.Content>
-          <Card.Header>Buy tokens from series #{currentSeries}</Card.Header>
-        </Card.Content>
-        <Dimmer.Dimmable as={Card.Content} blurring dimmed={contractEmpty || buyPending}>
-          <Dimmer active={contractEmpty} inverted>
-            <Header as='h3' icon>
-              <Icon name='frown' />
-              <Header.Subheader>
-                There are no IKB available to purchase
-              </Header.Subheader>
-            </Header>
-          </Dimmer>
-          <Dimmer active={buyPending} inverted>
-            <Loader inverted>Pending transaction</Loader>
-          </Dimmer>
-          <Form onSubmit={this.handleSubmit}>
-            <Form.Field>
-              <Input
-                label={{
-                  content: 'IKB'
-                }}
-                action={{
-                  color: 'teal',
-                  content: 'Buy',
-                  labelPosition: 'right',
-                  icon: 'cart'
-                }}
-                fluid
-                type='number'
-                min={1}
-                max={contractBalance}
-                value={this.state.value}
-                onChange={this.handleChange}
-              />
-            </Form.Field>
-            <p>Price: {this.state.value} IKB × Ξ{contractPrice} = Ξ{totalPrice}</p>
-            {IKBTokenNumbers}
-          </Form>
-        </Dimmer.Dimmable>
-      </Card>
+      <Dimmer.Dimmable as={Card.Content} blurring dimmed={contractEmpty || buyPending}>
+        <Dimmer active={contractEmpty} inverted>
+          <Header as='h3' icon>
+            <Icon name='frown' />
+            <Header.Subheader>
+              There are no IKB available to purchase
+            </Header.Subheader>
+          </Header>
+        </Dimmer>
+        <Dimmer active={buyPending} inverted>
+          <Loader inverted>Pending transaction</Loader>
+        </Dimmer>
+        <Form onSubmit={this.handleSubmit}>
+          <Form.Field>
+            <Input
+              label={{
+                content: 'IKB'
+              }}
+              action={{
+                color: 'teal',
+                content: 'Buy',
+                labelPosition: 'right',
+                icon: 'cart'
+              }}
+              fluid
+              type='number'
+              min={1}
+              max={contractBalance}
+              value={this.state.value}
+              onChange={this.handleChange}
+            />
+          </Form.Field>
+          <p>Price: {value} IKB × Ξ{contractPrice} = Ξ{totalPrice}</p>
+          {IKBTokenNumbers}
+        </Form>
+      </Dimmer.Dimmable>
     )
   }
 }

@@ -10,7 +10,7 @@ import getWeb3 from '../utils/getWeb3'
 import contract from 'truffle-contract'
 
 // Components
-// import { Dimmer, Loader } from 'semantic-ui-react'
+import { Card, Dimmer, Header, Icon, Menu } from 'semantic-ui-react'
 import AccountInfo from './AccountInfo'
 import ContractInfo from './ContractInfo'
 import BuyToken from './BuyToken'
@@ -37,8 +37,11 @@ class App extends Component {
       },
       buyPending: null,
       instance: null,
-      web3: null
+      web3: null,
+      currentPane: 0
     }
+
+    this.handleItemClick = this.handleItemClick.bind(this)
 
     this.toWei = this.toWei.bind(this)
     this.toEther = this.toEther.bind(this)
@@ -97,18 +100,26 @@ class App extends Component {
     const address = this.state.account.address
     const instance = this.state.instance
     const web3 = this.state.web3
-    console.log(instance)
     let account = this.state.account
-    web3.eth.getBalance(address, (error, balance) => {
-      if (error) { return console.log(error) }
-      account.ethBalance = balance.toNumber()
-      instance.balanceOf.call(address).then(balance => {
-        account.tokenBalance = balance.toNumber()
-        this.setState({
-          account: account
-        })
-      }).catch(console.log)
-    })
+
+    if (address) {
+      web3.eth.getBalance(address, (error, balance) => {
+        if (error) { return console.log(error) }
+        account.ethBalance = balance.toNumber()
+        instance.balanceOf.call(address).then(balance => {
+          account.tokenBalance = balance.toNumber()
+          this.setState({
+            account: account
+          })
+        }).catch(console.log)
+      })
+    } else {
+      account.ethBalance = 0
+      account.tokenBalance = 0
+      this.setState({
+        account: account
+      })
+    }
 
     // this.state.instance.issueNewSeries({ from: this.state.account.address }).then(data => {
     //   console.log(data)
@@ -118,22 +129,23 @@ class App extends Component {
   }
 
   getContractVariables () {
+    const instance = this.state.instance
     let contract = this.state.contract
-    this.state.instance.currentSeries.call().then(currentSeries => {
+    instance.currentSeries.call().then(currentSeries => {
       contract.currentSeries = currentSeries.toNumber()
-      return this.state.instance.issuedToDate.call()
+      return instance.issuedToDate.call()
     }).then(issuedToDate => {
       contract.issuedToDate = issuedToDate.toNumber()
-      return this.state.instance.series.call(contract.currentSeries)
+      return instance.series.call(contract.currentSeries)
     }).then(series => {
       contract.price = series[0].toNumber()
-      return this.state.instance.burnedToDate.call()
+      return instance.burnedToDate.call()
     }).then(burnedToDate => {
       contract.burnedToDate = burnedToDate.toNumber()
-      return this.state.instance.maxSupplyPossible.call()
+      return instance.maxSupplyPossible.call()
     }).then(maxSupplyPossible => {
       contract.maxSupplyPossible = maxSupplyPossible.toNumber()
-      return this.state.instance.balanceOf.call(this.state.instance.address) // .call(this.state.instance.address)
+      return instance.balanceOf.call(instance.address)
     }).then(contractBalance => {
       contract.contractBalance = contractBalance.toNumber()
       this.setState({
@@ -153,6 +165,10 @@ class App extends Component {
       this.getBalances()
       this.getContractVariables()
     })
+  }
+
+  handleItemClick (event, data) {
+    this.setState({ currentPane: data.index })
   }
 
   toWei (number, unit) {
@@ -193,28 +209,65 @@ class App extends Component {
   }
 
   render () {
+    const currentPane = this.state.currentPane
+
+    const items = [
+      'Account Info',
+      'Buy Tokens',
+      'Transfer Tokens'
+    ]
+
+    const panes = [
+      <AccountInfo
+        account={this.state.account}
+        toEther={this.toEther}
+      />,
+      <BuyToken
+        contract={this.state.contract}
+        buyPending={this.state.buyPending}
+        buyToken={this.buyToken}
+        toEther={this.toEther}
+      />,
+      <TransferToken
+        account={this.state.account}
+        contract={this.state.contract}
+        transferToken={this.transferToken}
+        isAddress={this.isAddress}
+      />
+    ]
+
+    let accountLocked = true
+    if (this.state.account.address) {
+      accountLocked = false
+    }
+
     return (
       <div>
         <ContractInfo
           contract={this.state.contract}
           toEther={this.toEther}
         />
-        <AccountInfo
-          account={this.state.account}
-          toEther={this.toEther}
-        />
-        <BuyToken
-          contract={this.state.contract}
-          buyPending={this.state.buyPending}
-          buyToken={this.buyToken}
-          toEther={this.toEther}
-        />
-        <TransferToken
-          account={this.state.account}
-          contract={this.state.contract}
-          transferToken={this.transferToken}
-          isAddress={this.isAddress}
-        />
+        <Dimmer.Dimmable as={Card} centered blurring dimmed={accountLocked}>
+          <Dimmer active={accountLocked} inverted>
+            <Header as='h3' icon>
+              <Icon name='lock' />
+              <Header.Subheader>
+                Unlock your account to view additional info
+              </Header.Subheader>
+            </Header>
+          </Dimmer>
+          <Card.Content>
+            <Card.Header>{items[currentPane]}</Card.Header>
+          </Card.Content>
+          {panes[currentPane]}
+          <Menu
+            activeIndex={this.state.currentPane}
+            attached='bottom'
+            widths={3}
+            items={items}
+            onItemClick={this.handleItemClick}
+          />
+        </Dimmer.Dimmable>
       </div>
     )
   }

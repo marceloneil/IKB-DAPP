@@ -4,17 +4,27 @@ import PropTypes from 'prop-types'
 import blockies from 'ethereum-blockies/blockies'
 
 class BlockiesIdenticon extends Component {
+  componentDidMount () {
+    if (this.props.seed) {
+      this.draw(this.props)
+    }
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.seed) {
-      blockies.render({
-        seed: nextProps.seed,
-        color: nextProps.color,
-        bgcolor: nextProps.bgcolor,
-        size: nextProps.size,
-        scale: nextProps.scale,
-        spotcolor: nextProps.spotcolor
-      }, this.canvas)
+      this.draw(nextProps)
     }
+  }
+
+  draw (props) {
+    blockies.render({
+      seed: props.seed,
+      color: props.color,
+      bgcolor: props.bgcolor,
+      size: props.size,
+      scale: props.scale,
+      spotcolor: props.spotcolor
+    }, this.canvas)
   }
 
   render () {
@@ -27,6 +37,7 @@ class BlockiesIdenticon extends Component {
   }
 }
 
+/* eslint-disable react/no-unused-prop-types */
 BlockiesIdenticon.propTypes = {
   seed: PropTypes.string,
   color: PropTypes.string,
